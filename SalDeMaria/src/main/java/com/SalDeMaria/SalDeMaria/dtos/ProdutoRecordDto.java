@@ -8,7 +8,8 @@ import jakarta.validation.constraints.Size;
 public record ProdutoRecordDto(
     @NotBlank String nome, 
     @NotNull @Positive double preco, 
-    @NotBlank @Positive int quantidade, 
+    @Positive int quantidade, 
     @Size(max = 250) String descricao) {
 
 }
+

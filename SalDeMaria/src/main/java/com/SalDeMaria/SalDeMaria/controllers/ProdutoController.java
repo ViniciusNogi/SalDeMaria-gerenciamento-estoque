@@ -50,7 +50,7 @@ public class ProdutoController {
                 produto.add(linkTo(methodOn(ProdutoController.class).buscarUm(id)).withSelfRel());
             }
         }
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        return ResponseEntity.status(HttpStatus.OK).body(produtoLista);
     }
 
     @GetMapping("/produtos/{id}")

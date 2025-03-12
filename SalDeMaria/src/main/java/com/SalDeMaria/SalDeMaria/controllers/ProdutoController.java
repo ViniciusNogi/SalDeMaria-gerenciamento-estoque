@@ -19,22 +19,31 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.SalDeMaria.SalDeMaria.dtos.ProdutoRecordDto;
+import com.SalDeMaria.SalDeMaria.infra.security.SecurityConfigurations;
 import com.SalDeMaria.SalDeMaria.model.entity.ProdutoEntity;
 import com.SalDeMaria.SalDeMaria.repositories.ProdutoRepository;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
 @RestController
+@Tag(name = "produtos", description = "Gerenciamento de estoque")
+@SecurityRequirement(name = SecurityConfigurations.SECURITY)
 public class ProdutoController {
 
     @Autowired
     ProdutoRepository produtoRepository;
-
-    @Operation(summary = "Cadastrar", description = "Método para cadastrar produtos", tags = "produtos")
+    
     @PostMapping("/produtos")
+    @Operation(summary = "Cadastrar", description = "Cadastra um novo produto.")
+    @ApiResponse(responseCode = "201", description = "Produto cadastrado com sucesso!")
+    @ApiResponse(responseCode = "400", description = "Produto já cadastrado.")
+    @ApiResponse(responseCode = "500", description = "Erro no servidor.")
     public ResponseEntity<ProdutoEntity> cadastrarProduto(@RequestBody @Valid ProdutoRecordDto produtoRecordDto) {
         var produtoEntity = new ProdutoEntity();
         BeanUtils.copyProperties(produtoRecordDto, produtoEntity);
@@ -42,6 +51,8 @@ public class ProdutoController {
     }
 
     @GetMapping("/produtos")
+    @Operation(summary = "Listar Produtos", description = "Lista todos os produtos")
+    @ApiResponse(responseCode = "200", description = "Lista de produtos retornado com sucesso!")
     public ResponseEntity<List<ProdutoEntity>> buscarTudo() {
         List<ProdutoEntity> produtoLista = produtoRepository.findAll();
         if (!produtoLista.isEmpty()) {
@@ -54,6 +65,9 @@ public class ProdutoController {
     }
 
     @GetMapping("/produtos/{id}")
+    @Operation(summary = "Buscar Produto por ID", description = "Retorna os detalhes de um produto específico.")
+    @ApiResponse(responseCode = "200", description = "Produto encontrado com sucesso.")
+    @ApiResponse(responseCode = "404", description = "Produto não encontrado.")
     public ResponseEntity<Object> buscarUm(@PathVariable(value = "id") UUID id) {
         Optional<ProdutoEntity> produto = produtoRepository.findById(id);
         if (produto.isEmpty()) {
@@ -64,6 +78,9 @@ public class ProdutoController {
     }
 
     @DeleteMapping("/produtos/{id}")
+    @Operation(summary = "Deletar Produto", description = "Remove um produto pelo ID.")
+    @ApiResponse(responseCode = "200", description = "Produto excluído com sucesso.")
+    @ApiResponse(responseCode = "404", description = "Produto não encontrado.")
     public ResponseEntity<Object> deletar(@PathVariable(value="id") UUID id){
         Optional<ProdutoEntity>produto = produtoRepository.findById(id);
         if(produto.isEmpty()){
@@ -74,6 +91,9 @@ public class ProdutoController {
     }
     
     @PutMapping("/produtos/{id}")
+    @Operation(summary = "Atualizar Produto", description = "Atualiza os dados de um produto existente.")
+    @ApiResponse(responseCode = "200", description = "Produto atualizado com sucesso.")
+    @ApiResponse(responseCode = "404", description = "Produto não encontrado.")
     public ResponseEntity<Object> atualizar(@PathVariable (value = "id") UUID id, @RequestBody @Valid ProdutoRecordDto produtoRecordDto){
         Optional<ProdutoEntity> produto = produtoRepository.findById(id);
         if(produto.isEmpty()){
